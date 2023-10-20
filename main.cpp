@@ -17,6 +17,8 @@ std::ostream& operator<<(std::ostream& os, const Garden& garden)
 {
 	for (size_t y = 0; y < Y; y++)
 	{
+		os << '\t';
+
 		for (size_t x = 0; x < X; x++)
 		{
 			os << std::setw(3) << garden.grid[x][y] << ' ';
@@ -77,14 +79,14 @@ unsigned short fitnes(const Individual& individual)
 Individual tournamentSelection(std::vector<Individual> population)
 {
 	
-	Individual individual1 = population[randIndex(1, populationSize)];
+	Individual individual1 = population[randIndex(0, populationSize - 1)];
 
-	Individual individual2 = population[randIndex(1, populationSize)];
+	Individual individual2 = population[randIndex(0, populationSize - 1)];
 
 	//kontrola, aby sa 2x nevybral ten isty jedinec
 	while (individual1 != individual2)
 	{
-		individual2 = population[randIndex(1, populationSize)];
+		individual2 = population[randIndex(0, populationSize - 1)];
 	}
 	
 
@@ -210,6 +212,48 @@ std::vector<Individual> firstGeneration()
 }
 
 
+Individual geneticAlgorithm()
+{
+	std::vector<Individual> firstGen = firstGeneration();
+
+	Individual bestIndividual = Individual();
+	bestIndividual.fitnesValue = 0;
+
+
+
+	for (auto& i : firstGen)
+	{
+		i.fitnesValue = fitnes(i);
+
+		if (i.fitnesValue > bestIndividual.fitnesValue)
+		{
+			bestIndividual = i;
+		}
+
+	}
+
+
+
+
+	std::cout << bestIndividual.fitnesValue << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+	return bestIndividual;
+
+}
+
+
+
+
 /*
 * 1 generacia bude 50 jedincov, lebo sak preco nie
 * v prvej generacii sa nahodne vygeneruju tieto jedince
@@ -228,8 +272,10 @@ int main()
 	
 
 	//inicializacia
-	X = 12;
-	Y = 10;
+	std::cin >> X >> Y;
+
+	/*--X;
+	--Y;*/
 	
 	blankGarden = Garden(X, Y);
 
@@ -247,20 +293,36 @@ int main()
 
 	//koniec inicializacie
 
-	firstGeneration();
+	/*std::vector<Individual> firstGen = firstGeneration();
 
 	Individual individual = Individual();
 
 	individual.genes = generateRandomGenes();
 	
-	//Individual genes = geneticAlgorithm();
+	Individual genes = geneticAlgorithm();
 
 	blankGarden.useGenes(individual);
 
-	/*blankGarden.moveLeft(X - 1, 5, 1, individual);
-	blankGarden.moveLeft(X - 1, 8, 2, individual);*/
+	individual.genes[X + Y] = 1;
+	individual.genes[X + Y + 1] = 1;
+	individual.genes[X + Y + 2] = 1;
+	individual.genes[X + Y + 3] = 0;
+	individual.genes[X + Y + 4] = 1;
+	individual.genes[X + Y + 5] = 1;
 
-	std::cout << blankGarden << std::endl;
+
+	blankGarden.moveLeft(X - 1, 5, 1, individual);
+	blankGarden.moveDown(5, 0, 4, individual);
+	blankGarden.moveLeft(X - 1, 3, 2, individual);*/
+
+
+	/*Individual best = Individual();
+	best.genes = { 6, 2, 21, 41, 29, 15, 20, 16, 33, 24, 18, 10, 17, 43, 9, 28, 39, 15, 25, 12, 35, 30, 1, 0, 1, 1, 0, 0, };*/
+
+	Individual best = geneticAlgorithm();
+	blankGarden.useGenes(best);
+
+	std::cout << std::endl << std::endl << blankGarden << std::endl << std::endl;
 
 	
 	
