@@ -31,6 +31,11 @@ std::ostream& operator<<(std::ostream& os, const Garden& garden)
 }
 
 
+bool customIndividualort(const Individual& individual1, const Individual& individual2) {
+	return individual1.fitnesValue > individual2.fitnesValue;
+}
+
+
 //lepsi random generator indexov, najdene na cppreference.com
 std::random_device rd;  // a seed source for the random number engine
 std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
@@ -84,7 +89,7 @@ Individual tournamentSelection(std::vector<Individual> population)
 	Individual individual2 = population[randIndex(0, populationSize - 1)];
 
 	//kontrola, aby sa 2x nevybral ten isty jedinec
-	while (individual1 != individual2)
+	while (individual1 == individual2)
 	{
 		individual2 = population[randIndex(0, populationSize - 1)];
 	}
@@ -130,20 +135,20 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 	}
 
 
-	child2Genes.insert(child2Genes.end(), parent1.genes.end() - (individualSize - child1Genes.size()), parent1.genes.end());
+	child2Genes.insert(child2Genes.end(), parent1.genes.end() - (individualSize - child2Genes.size()), parent1.genes.end());
 
 
-	for (size_t i = 0; i < individualSize; i++)
+	/*for (size_t i = 0; i < parent2.genes.size(); i++)
 	{
 		if (std::find(child1Genes.begin(), child1Genes.end(), parent2.genes[i]) == child1Genes.end())
 			child1Genes.push_back(parent2.genes[i]);
 	}
 
-	for (size_t i = 0; i < individualSize; i++)
+	for (size_t i = 0; i < parent1.genes.size(); i++)
 	{
 		if (std::find(child2Genes.begin(), child2Genes.end(), parent1.genes[i]) == child2Genes.end())
 			child2Genes.push_back(parent1.genes[i]);
-	}
+	}*/
 
 
 	Individual child1;
@@ -204,6 +209,9 @@ std::vector<Individual> firstGeneration()
 		Individual newIndividual = Individual();
 		newIndividual.genes = generateRandomGenes();
 
+		newIndividual.fitnesValue = fitnes(newIndividual);
+
+
 		firstGeneration.push_back(newIndividual);
 	}
 
@@ -214,14 +222,61 @@ std::vector<Individual> firstGeneration()
 
 Individual geneticAlgorithm()
 {
-	std::vector<Individual> firstGen = firstGeneration();
+	std::vector<Individual> generation = firstGeneration();
+	
+	for (size_t i = 0; i < 100; i++)
+	{
+		std::vector<Individual> nextGeneration;
+
+		for (size_t i = 0; i < (populationSize * 0.9 / 2); i++)
+		{
+			Individual parent1 = tournamentSelection(generation);
+			Individual parent2 = tournamentSelection(generation);
+
+			while (parent1 == parent2)
+			{
+				parent2 = tournamentSelection(generation);
+			}
+
+			std::pair<Individual, Individual> children = crossover(parent1, parent2);
+
+			children.first.fitnesValue = fitnes(children.first);
+			if (children.first.fitnesValue == desiredFitnesValue)
+			{
+				return children.first;
+			}
+
+			children.second.fitnesValue = fitnes(children.second);
+			
+			if (children.second.fitnesValue == desiredFitnesValue)
+			{
+				return children.second;
+			}
+
+
+			nextGeneration.push_back(children.first);
+			nextGeneration.push_back(children.second);
+		}
+
+
+		std::sort(generation.begin(), generation.end(), customIndividualort);
+
+		//10% najlepsich sa vzdy presunie do dalsej generacie
+		for (size_t i = 0; i < (populationSize * 0.1); i++)
+		{
+			nextGeneration.push_back(generation[i]);
+		}
+
+		generation = nextGeneration;
+	}
+
+	 
+
+
 
 	Individual bestIndividual = Individual();
-	bestIndividual.fitnesValue = 0;
 
-
-
-	for (auto& i : firstGen)
+	for (auto& i : generation)
 	{
 		i.fitnesValue = fitnes(i);
 
@@ -235,20 +290,9 @@ Individual geneticAlgorithm()
 
 
 
-	std::cout << bestIndividual.fitnesValue << std::endl;
-
-
-
-
-
-
-
-
-
 
 
 	return bestIndividual;
-
 }
 
 

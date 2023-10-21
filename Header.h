@@ -3,7 +3,7 @@
 unsigned short X = 0;
 unsigned short Y = 0;
 unsigned short stoneCount = 0;
-unsigned short populationSize = 50;
+unsigned short populationSize = 100;
 unsigned short individualSize = 0;
 unsigned short desiredFitnesValue = 0;
 
@@ -25,8 +25,8 @@ public:
 	std::vector<unsigned short> genes;
 
 
-	bool operator!=(const Individual& other) const {
-		return this->fitnesValue != other.fitnesValue;
+	bool operator==(const Individual& other) const {
+		return genes == other.genes;
 	}
 
 };
