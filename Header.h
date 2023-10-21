@@ -3,11 +3,6 @@
 unsigned short X = 0;
 unsigned short Y = 0;
 unsigned short stoneCount = 0;
-unsigned short populationSize = 100;
-unsigned short individualSize = 0;
-unsigned short desiredFitnesValue = 0;
-unsigned short chanceToMutate = 30;
-
 
 
 class Individual
@@ -26,8 +21,30 @@ public:
 	std::vector<unsigned short> genes;
 
 
-	bool operator==(const Individual& other) const {
+	bool operator==(const Individual& other) const
+	{
 		return genes == other.genes;
+	}
+};
+
+
+
+class Generation
+{
+public:
+	Generation() {};
+	~Generation() {};
+
+	std::vector<Individual> individuals;
+
+	unsigned short fitnesValuesSum = 0;
+
+	void sumFitnesValues()
+	{
+		for (auto& i : individuals)
+		{
+			fitnesValuesSum += i.fitnesValue;
+		}
 	}
 
 };
@@ -59,29 +76,29 @@ public:
 	{
 		for (unsigned short y = yStart; y < Y; y++)
 		{
-			if (!grid[x - 1][y])
+			if (!grid[x][y])
 			{
-				grid[x - 1][y] = moveNumber;
+				grid[x][y] = moveNumber;
 			}
 			else
 			{
-				if(individual.genes[X + Y + ((moveNumber + 0) % stoneCount)] == 0 && x != X && !grid[x][y - 1])
+				if(individual.genes[X + Y + ((moveNumber + 0) % stoneCount)] == 0 && x + 1 != X && !grid[x + 1][y - 1])
 				{
-					if (moveRight(x, y, moveNumber, individual))
+					if (moveRight(x + 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 				}
-				else if(x - 1 != 0 && !grid[x - 2][y - 1])
+				else if(x != 0 && !grid[x - 1][y - 1])
 				{
-					if (moveLeft(x - 2, y, moveNumber, individual))
+					if (moveLeft(x - 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (x != X && !grid[x][y - 1])
+				else if (x + 1 != X && !grid[x + 1][y - 1])
 				{
-					if (moveRight(x, y, moveNumber, individual))
+					if (moveRight(x + 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
@@ -100,29 +117,29 @@ public:
 	{
 		for (short y = yStart; y >= 0; y--)
 		{
-			if (!grid[x - 1][y])
+			if (!grid[x][y])
 			{
-				grid[x - 1][y] = moveNumber;
+				grid[x][y] = moveNumber;
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 1) % stoneCount)] == 0 && x - 1 != 0 && !grid[x - 2][y + 1])
+				if (individual.genes[X + Y + ((moveNumber + 1) % stoneCount)] == 0 && x != 0 && !grid[x - 1][y + 1])
 				{
-					if (moveLeft(x - 2, y + 2, moveNumber, individual))
+					if (moveLeft(x - 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (x != X && !grid[x][y + 1])
+				else if (x + 1 != X && !grid[x + 1][y + 1])
 				{
-					if (moveRight(x, y + 2, moveNumber, individual))
+					if (moveRight(x + 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (x - 1 != 0 && !grid[x - 2][y + 1])
+				else if (x != 0 && !grid[x - 1][y + 1])
 				{
-					if (moveLeft(x - 2, y + 2, moveNumber, individual))
+					if (moveLeft(x - 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
@@ -141,37 +158,35 @@ public:
 	{
 		for (short x = xStart; x >= 0; x--)
 		{
-			if (!grid[x][y - 1])
+			if (!grid[x][y])
 			{
-				grid[x][y - 1] = moveNumber;
+				grid[x][y] = moveNumber;
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 2) % stoneCount)] == 0 && y != Y && !grid[x + 1][y])
+				if (individual.genes[X + Y + ((moveNumber + 2) % stoneCount)] == 0 && y + 1 != Y && !grid[x + 1][y + 1])
 				{
-					if (moveDown(x + 2, y, moveNumber, individual))
+					if (moveDown(x + 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (y - 1 != 0 && !grid[x + 1][y - 2])
+				else if (y != 0 && !grid[x + 1][y - 1])
 				{
-					if (moveUp(x + 2, y - 2, moveNumber, individual))
+					if (moveUp(x + 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (y != Y && !grid[x + 1][y])
+				else if (y + 1 != Y && !grid[x + 1][y + 1])
 				{
-					if (moveDown(x + 2, y, moveNumber, individual))
+					if (moveDown(x + 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
 				else
-				{
 					return 1;
-				}
 			}
 		}
 
@@ -182,37 +197,35 @@ public:
 	{
 		for (unsigned short x = xStart; x < X; x++)
 		{
-			if (!grid[x][y - 1])
+			if (!grid[x][y])
 			{
-				grid[x][y - 1] = moveNumber;
+				grid[x][y] = moveNumber;
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 3) % stoneCount)] == 0 && y - 1 != 0 && !grid[x - 1][y - 2])
+				if (individual.genes[X + Y + ((moveNumber + 3) % stoneCount)] == 0 && y != 0 && !grid[x - 1][y - 1])
 				{
-					if (moveUp(x, y - 2, moveNumber, individual))
+					if (moveUp(x - 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (y != Y && !grid[x - 1][y])
+				else if (y + 1 != Y && !grid[x - 1][y + 1])
 				{
-					if (moveDown(x, y, moveNumber, individual))
+					if (moveDown(x - 1, y + 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
-				else if (y - 1 != 0 && !grid[x - 1][y - 2])
+				else if (y != 0 && !grid[x - 1][y - 1])
 				{
-					if (moveUp(x, y - 2, moveNumber, individual))
+					if (moveUp(x - 1, y - 1, moveNumber, individual))
 						return 1;
 					else
 						return 0;
 }
 				else
-				{
 					return 1;
-				}
 			}
 		}
 
@@ -239,25 +252,25 @@ public:
 			if (individual.genes[i] <= X)
 			{
 				if (!grid[individual.genes[i] - 1][0])
-					if (moveDown(individual.genes[i], 0, i + 1, individual))
+					if (moveDown(individual.genes[i] - 1, 0, i + 1, individual))
 						return;
 			}
 			else if (individual.genes[i] <= X + Y)
 			{
 				if(!grid[X - 1][(individual.genes[i] - X) - 1])
-					if (moveLeft(X - 1, individual.genes[i] - X, i + 1, individual))
+					if (moveLeft(X - 1, individual.genes[i] - X - 1, i + 1, individual))
 						return;
 			}
 			else if (individual.genes[i] <= X + Y + X)
 			{
 				if(!grid[(individual.genes[i] - X - Y) - 1][Y - 1])
-					if (moveUp(individual.genes[i] - X - Y, Y - 1, i + 1, individual))
+					if (moveUp(individual.genes[i] - X - Y - 1, Y - 1, i + 1, individual))
 						return;
 			}
 			else if (individual.genes[i] <= X + Y + X + Y)
 			{
 				if (!grid[0][(individual.genes[i] - X - Y - X) - 1])
-					if (moveRight(0, individual.genes[i] - X - Y - X, i + 1, individual))
+					if (moveRight(0, individual.genes[i] - X - Y - X - 1, i + 1, individual))
 						return;
 			}
 		}
@@ -269,8 +282,6 @@ public:
 	void placeStone(short x, short y)
 	{
 		grid[x][y] = -1;
-
-		stoneCount += 1;
 	}
 };
 
