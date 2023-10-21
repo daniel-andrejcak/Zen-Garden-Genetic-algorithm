@@ -6,6 +6,7 @@ unsigned short stoneCount = 0;
 unsigned short populationSize = 100;
 unsigned short individualSize = 0;
 unsigned short desiredFitnesValue = 0;
+unsigned short chanceToMutate = 30;
 
 
 

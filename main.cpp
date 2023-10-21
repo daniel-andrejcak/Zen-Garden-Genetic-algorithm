@@ -165,7 +165,23 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 }
 
 
-void mutate(const Individual& individual){}
+//mutovanie - vymeni poradie 2 genov
+void mutate(Individual& individual)
+{
+	size_t index1 = randIndex(0, X + Y - 1);
+	size_t index2 = randIndex(0, X + Y - 1);
+
+	while (index1 == index2)
+	{
+		index2 = randIndex(0, X + Y - 1);
+	}
+
+
+	std::swap(individual.genes[index1], individual.genes[index2]);
+
+	individual.fitnesValue = fitnes(individual);
+
+}
 
 
 
@@ -224,11 +240,11 @@ Individual geneticAlgorithm()
 {
 	std::vector<Individual> generation = firstGeneration();
 	
-	for (size_t i = 0; i < 100; i++)
+	for (size_t i = 0; i < 500; i++)
 	{
 		std::vector<Individual> nextGeneration;
 
-		for (size_t i = 0; i < (populationSize * 0.9 / 2); i++)
+		for (size_t j = 0; j < (populationSize * 0.9 / 2); j++)
 		{
 			Individual parent1 = tournamentSelection(generation);
 			Individual parent2 = tournamentSelection(generation);
@@ -240,18 +256,34 @@ Individual geneticAlgorithm()
 
 			std::pair<Individual, Individual> children = crossover(parent1, parent2);
 
+			if (randIndex(0, 100) < chanceToMutate)
+			{
+				mutate(children.first);
+			}
+			
+			if (randIndex(0, 100) < chanceToMutate)
+			{
+				mutate(children.second);
+			}
+			
+			
+			
+			
 			children.first.fitnesValue = fitnes(children.first);
 			if (children.first.fitnesValue == desiredFitnesValue)
 			{
+				std::cout << "Riesenie sa naslo v " << i << " generacii" << std::endl;
 				return children.first;
 			}
 
 			children.second.fitnesValue = fitnes(children.second);
-			
 			if (children.second.fitnesValue == desiredFitnesValue)
 			{
+				std::cout << "Riesenie sa naslo v " << i << " generacii" << std::endl;
 				return children.second;
 			}
+
+
 
 
 			nextGeneration.push_back(children.first);
@@ -286,8 +318,6 @@ Individual geneticAlgorithm()
 		}
 
 	}
-
-
 
 
 
