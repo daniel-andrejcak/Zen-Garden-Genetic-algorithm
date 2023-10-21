@@ -78,10 +78,8 @@ unsigned short fitnes(const Individual& individual)
 
 
 
-
-
 //nahodne vyberie 2 jedincov a toho, ktory ma vacs fitnes vrati
-Individual tournamentSelection(std::vector<Individual> population)
+Individual tournamentSelection(const std::vector<Individual>& population)
 {
 	
 	Individual individual1 = population[randIndex(0, populationSize - 1)];
@@ -138,19 +136,6 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 	child2Genes.insert(child2Genes.end(), parent1.genes.end() - (individualSize - child2Genes.size()), parent1.genes.end());
 
 
-	/*for (size_t i = 0; i < parent2.genes.size(); i++)
-	{
-		if (std::find(child1Genes.begin(), child1Genes.end(), parent2.genes[i]) == child1Genes.end())
-			child1Genes.push_back(parent2.genes[i]);
-	}
-
-	for (size_t i = 0; i < parent1.genes.size(); i++)
-	{
-		if (std::find(child2Genes.begin(), child2Genes.end(), parent1.genes[i]) == child2Genes.end())
-			child2Genes.push_back(parent1.genes[i]);
-	}*/
-
-
 	Individual child1;
 	Individual child2;
 
@@ -165,22 +150,46 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 }
 
 
-//mutovanie - vymeni poradie 2 genov
-void mutate(Individual& individual)
+//vrati 2 indexy pre funkciu mutate - prvy je vzdy mensi
+std::pair<unsigned short, unsigned short> indexToMutate(unsigned short start, unsigned short end)
 {
-	size_t index1 = randIndex(0, X + Y - 1);
-	size_t index2 = randIndex(0, X + Y - 1);
+	size_t index1 = randIndex(start, end);
+	size_t index2 = randIndex(start, end);
 
 	while (index1 == index2)
 	{
 		index2 = randIndex(0, X + Y - 1);
 	}
 
+	std::pair<unsigned short, unsigned short> index;
 
-	std::swap(individual.genes[index1], individual.genes[index2]);
+	if (index1 < index2)
+	{
+		index = std::make_pair(index1, index2);
+	}
+	else
+	{
+		index = std::make_pair(index2, index1);
+	}
 
-	individual.fitnesValue = fitnes(individual);
+	return index;
+}
 
+
+//mutovanie - vymeni poradie 2 genov
+void mutate(Individual& individual)
+{
+	std::pair<unsigned short, unsigned short> index = indexToMutate(0, X + Y - 1);
+	
+
+	if (unsigned short i = randIndex(0,1); i == 0)
+	{
+		std::swap(individual.genes[index.first], individual.genes[index.second]);
+	}
+	else
+	{
+		std::reverse(individual.genes.begin() + index.first, individual.genes.begin() + index.second);
+	}
 }
 
 
@@ -215,7 +224,7 @@ std::vector<unsigned short> generateRandomGenes()
 }
 
 
-//nahodne vytvori prvu generaciu jedincov - asi to bude std::vector<Genes>
+//nahodne vytvori prvu generaciu jedincov
 std::vector<Individual> firstGeneration()
 {
 	std::vector<Individual> firstGeneration;
