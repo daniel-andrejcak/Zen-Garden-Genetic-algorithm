@@ -105,10 +105,21 @@ Individual tournamentSelection(const Generation& population)
 }
 
 
-/*Individual& rouletteSeleciton(std::vector<Individual> population)
+Individual rouletteSelection(const Generation& population)
 {
-	//population.erase(std::find(population.begin(), population.end()));
-}*/
+	unsigned short partialSum = 0;
+	unsigned short randIndividual = randIndex(0, population.fitnesValuesSum);
+
+	for (auto& i : population.individuals)
+	{
+		partialSum += i.fitnesValue;
+
+		if (partialSum >= randIndividual)
+		{
+			return i;
+		}
+	}
+}
 
 
 //funkcia zabezpecujuca krizenie, vrati 2 potomkov
@@ -266,12 +277,27 @@ Individual geneticAlgorithm()
 
 		for (size_t j = 0; j < (populationSize * 0.9 / 2); j++)
 		{
-			Individual parent1 = tournamentSelection(generation);
-			Individual parent2 = tournamentSelection(generation);
 
-			while (parent1 == parent2)
+			Individual parent1;
+			Individual parent2;
+
+			if (randIndex(0,1))
+			{
+				parent1 = tournamentSelection(generation);
 				parent2 = tournamentSelection(generation);
 
+				while (parent1 == parent2)
+					parent2 = tournamentSelection(generation);
+			}
+			else
+			{
+				parent1 = rouletteSelection(generation);
+				parent2 = rouletteSelection(generation);
+
+				while (parent1 == parent2)
+					parent2 = rouletteSelection(generation);
+
+			}
 
 			std::pair<Individual, Individual> children = crossover(parent1, parent2);
 
