@@ -51,7 +51,7 @@ bool individualIsLessThan(const Individual& individual1, const Individual& indiv
 std::random_device rd;  // a seed source for the random number engine
 std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
 
-unsigned short randIndex(unsigned short min, unsigned short max)
+unsigned int randIndex(unsigned short min, unsigned short max)
 {
 	std::uniform_int_distribution<> distribution(min, max);
 
@@ -107,8 +107,8 @@ Individual tournamentSelection(const Generation& population)
 
 Individual rouletteSelection(const Generation& population)
 {
-	unsigned short partialSum = 0;
-	unsigned short randIndividual = randIndex(0, population.fitnesValuesSum);
+	unsigned int partialSum = 0;
+	unsigned int randIndividual = randIndex(0, population.fitnesValuesSum);
 
 	for (auto& i : population.individuals)
 	{
@@ -121,6 +121,8 @@ Individual rouletteSelection(const Generation& population)
 	}
 }
 
+
+Individual (*selection)(const Generation&);
 
 //funkcia zabezpecujuca krizenie, vrati 2 potomkov
 std::pair<Individual, Individual> crossover(Individual parent1, Individual parent2)
@@ -160,6 +162,9 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 
 	child1.genes = child1Genes;
 	child2.genes = child2Genes;
+
+
+
 
 
 	std::pair<Individual, Individual> children;
@@ -277,31 +282,25 @@ Individual geneticAlgorithm()
 
 		for (size_t j = 0; j < (populationSize * 0.9 / 2); j++)
 		{
+			
 
-			Individual parent1;
-			Individual parent2;
-
-			if (randIndex(0,1))
-			{
-				parent1 = tournamentSelection(generation);
-				parent2 = tournamentSelection(generation);
-
-				while (parent1 == parent2)
-					parent2 = tournamentSelection(generation);
-			}
+			if (randIndex(0, 1))
+				selection = tournamentSelection;
 			else
-			{
-				parent1 = rouletteSelection(generation);
-				parent2 = rouletteSelection(generation);
+				selection = rouletteSelection;
+			
+			Individual parent1 = selection(generation);
+			Individual parent2 = selection(generation);
 
-				while (parent1 == parent2)
-					parent2 = rouletteSelection(generation);
+			while (parent1 == parent2)
+				parent2 = selection(generation);
+		
 
-			}
 
 			std::pair<Individual, Individual> children = crossover(parent1, parent2);
 
 
+			
 			if (randIndex(0, 100) < chanceToMutate)
 				mutate(children.first);
 			
@@ -372,12 +371,13 @@ Ak má vo¾né smery v¾avo aj vpravo, je jeho vec, kam sa otoèí. Ak má vo¾ný len je
 Ak sa nemá kam otoèi, je koniec hry.*/
 int main()
 {
-	
-
 	//inicializacia
 	std::cout << "Zadajte rozmery zahrady" << std::endl;
 	std::cin >> X >> Y;
 
+	blankGarden = Garden(X, Y);
+	
+	
 	/*std::cout << "Zadajte pocet kamenov" << std::endl;
 	std::cin >> stoneCount;
 
@@ -397,7 +397,6 @@ int main()
 
 	stoneCount = 6;
 	
-	blankGarden = Garden(X, Y);
 
 	blankGarden.placeStone(1, 2);
 	blankGarden.placeStone(2, 4);
@@ -411,8 +410,7 @@ int main()
 
 	loadBlankGenes();
 
-	//koniec inicializdsgfgdacie
-
+	//koniec inicializacie
 	
 
 	Individual best = geneticAlgorithm();
@@ -420,9 +418,9 @@ int main()
 
 	blankGarden.useGenes(best);
 
+
 	std::cout << std::endl << std::endl << blankGarden << std::endl << std::endl;
 
-	
 	
 	return 0;
 }

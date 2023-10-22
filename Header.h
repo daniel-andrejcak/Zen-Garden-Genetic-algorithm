@@ -37,10 +37,12 @@ public:
 
 	std::vector<Individual> individuals;
 
-	unsigned short fitnesValuesSum = 0;
+	unsigned int fitnesValuesSum = 0;
 
 	void sumFitnesValues()
 	{
+		fitnesValuesSum = 0;
+
 		for (auto& i : individuals)
 		{
 			fitnesValuesSum += i.fitnesValue;
