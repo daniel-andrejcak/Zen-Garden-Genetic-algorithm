@@ -51,7 +51,7 @@ bool individualIsLessThan(const Individual& individual1, const Individual& indiv
 std::random_device rd;  // a seed source for the random number engine
 std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
 
-unsigned int randIndex(unsigned short min, unsigned short max)
+unsigned int randIndex(unsigned int min, unsigned int max)
 {
 	std::uniform_int_distribution<> distribution(min, max);
 
@@ -88,7 +88,9 @@ unsigned short fitnes(const Individual& individual)
 }
 
 
-//nahodne vyberie 2 jedincov a toho, ktory ma vacs fitnes vrati
+Individual(*selection)(const Generation&);
+
+//nahodne vyberie 2 jedincov a toho, ktory ma vacsiu fitnes vrati
 Individual tournamentSelection(const Generation& population)
 {
 	
@@ -121,30 +123,23 @@ Individual rouletteSelection(const Generation& population)
 	}
 }
 
-
-Individual (*selection)(const Generation&);
-
-//funkcia zabezpecujuca krizenie, vrati 2 potomkov
+//funkcia zabezpecujuca krizenie, vrati 2 potomkov - single point crossover
 std::pair<Individual, Individual> crossover(Individual parent1, Individual parent2)
 {
 	//tu sa bude robit krizenie
-	unsigned short splitIndex = randIndex(1, individualSize - 1);
+	unsigned short splitIndex = randIndex(1, X + Y - 1);
 
-	
+
 	std::vector<unsigned short> child1Genes(parent1.genes.begin(), parent1.genes.begin() + splitIndex);
 	std::vector<unsigned short> child2Genes(parent2.genes.begin(), parent2.genes.begin() + splitIndex);
 
-
+	//odstrani duplicitne geny - tie ktore by sa po krizeni mohli v child vyskytnut 2x
 	for (auto& gene : child1Genes)
 	{
 		auto it = std::find(parent2.genes.begin(), parent2.genes.end(), gene);
 		if (it != parent2.genes.end())
 			parent2.genes.erase(it);
 	}
-
-	
-	child1Genes.insert(child1Genes.end(), parent2.genes.end() - (individualSize - child1Genes.size()), parent2.genes.end());
-
 
 	for (auto& gene : child2Genes)
 	{
@@ -154,7 +149,20 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 	}
 
 
-	child2Genes.insert(child2Genes.end(), parent1.genes.end() - (individualSize - child2Genes.size()), parent1.genes.end());
+	child1Genes.insert(child1Genes.end(), parent2.genes.end() - (X + Y + stoneCount - child1Genes.size()), parent2.genes.end() - stoneCount);
+	child2Genes.insert(child2Genes.end(), parent1.genes.end() - (X + Y + stoneCount - child2Genes.size()), parent1.genes.end() - stoneCount);
+
+
+	if (randIndex(0, 1))
+	{
+		child1Genes.insert(child1Genes.end(), parent1.genes.end() - stoneCount, parent1.genes.end());
+		child2Genes.insert(child2Genes.end(), parent2.genes.end() - stoneCount, parent2.genes.end());		
+	}
+	else
+	{
+		child1Genes.insert(child1Genes.end(), parent2.genes.end() - stoneCount, parent2.genes.end());
+		child2Genes.insert(child2Genes.end(), parent1.genes.end() - stoneCount, parent1.genes.end());
+	}
 
 
 	Individual child1;
@@ -163,15 +171,12 @@ std::pair<Individual, Individual> crossover(Individual parent1, Individual paren
 	child1.genes = child1Genes;
 	child2.genes = child2Genes;
 
-
-
-
-
 	std::pair<Individual, Individual> children;
 	children = std::make_pair(child1, child2);
 
 	return children;
 }
+
 
 
 //vrati 2 indexy pre funkciu mutate - prvy je vzdy mensi
@@ -199,7 +204,6 @@ std::pair<unsigned short, unsigned short> indexToMutate(unsigned short start, un
 	return index;
 }
 
-
 void mutate(Individual& individual)
 {
 	std::pair<unsigned short, unsigned short> index = indexToMutate(0, X + Y - 1);
@@ -215,7 +219,6 @@ void mutate(Individual& individual)
 		std::reverse(individual.genes.begin() + index.first, individual.genes.begin() + index.second);
 	}
 }
-
 
 
 void loadBlankGenes()
@@ -246,7 +249,6 @@ std::vector<unsigned short> generateRandomGenes()
 
 	return genes;
 }
-
 
 //nahodne vytvori prvu generaciu jedincov
 Generation firstGeneration()
@@ -302,7 +304,7 @@ Individual geneticAlgorithm()
 
 			
 			if (randIndex(0, 100) < chanceToMutate)
-				mutate(children.first);
+				mutate(children.first); 
 			
 			if (randIndex(0, 100) < chanceToMutate)
 				mutate(children.second);
@@ -378,7 +380,7 @@ int main()
 	blankGarden = Garden(X, Y);
 	
 	
-	/*std::cout << "Zadajte pocet kamenov" << std::endl;
+	std::cout << "Zadajte pocet kamenov" << std::endl;
 	std::cin >> stoneCount;
 
 
@@ -393,9 +395,9 @@ int main()
 
 		blankGarden.placeStone(x, y);
 	
-	}*/
+	}
 
-	stoneCount = 6;
+	/*stoneCount = 6;
 	
 
 	blankGarden.placeStone(1, 2);
@@ -403,7 +405,7 @@ int main()
 	blankGarden.placeStone(4, 3);
 	blankGarden.placeStone(5, 1);
 	blankGarden.placeStone(8, 6);
-	blankGarden.placeStone(9, 6);
+	blankGarden.placeStone(9, 6);*/
 
 	individualSize = X + Y + stoneCount;
 	desiredFitnesValue = X * Y - stoneCount;

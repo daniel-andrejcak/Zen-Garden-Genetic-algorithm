@@ -243,6 +243,9 @@ public:
 		  ak je cislo vacsie ako X + Y a mensie rovne ako X + Y + X, tak je to pohyb zo spodnej strany
 		  ak je cislo vacsie ako X + Y + X a mensie rovne ako X + Y + X + Y tak je to pohyb z lavej strany*/
 	
+
+		unsigned short moveNumber = 1;
+
 		for (unsigned short i = 0; i < X + Y; i++)
 		{			
 			if (individual.genes[i] == 0)
@@ -254,26 +257,38 @@ public:
 			if (individual.genes[i] <= X)
 			{
 				if (!grid[individual.genes[i] - 1][0])
-					if (moveDown(individual.genes[i] - 1, 0, i + 1, individual))
+				{
+					moveNumber++;
+					if (moveDown(individual.genes[i] - 1, 0, moveNumber, individual))
 						return;
+				}
 			}
 			else if (individual.genes[i] <= X + Y)
 			{
-				if(!grid[X - 1][(individual.genes[i] - X) - 1])
-					if (moveLeft(X - 1, individual.genes[i] - X - 1, i + 1, individual))
+				if (!grid[X - 1][(individual.genes[i] - X) - 1])
+				{
+					moveNumber++;
+					if (moveLeft(X - 1, individual.genes[i] - X - 1, moveNumber, individual))
 						return;
+				}
 			}
 			else if (individual.genes[i] <= X + Y + X)
 			{
-				if(!grid[(individual.genes[i] - X - Y) - 1][Y - 1])
-					if (moveUp(individual.genes[i] - X - Y - 1, Y - 1, i + 1, individual))
+				if (!grid[(individual.genes[i] - X - Y) - 1][Y - 1])
+				{
+					moveNumber++;
+					if (moveUp(individual.genes[i] - X - Y - 1, Y - 1, moveNumber, individual))
 						return;
+				}
 			}
 			else if (individual.genes[i] <= X + Y + X + Y)
 			{
 				if (!grid[0][(individual.genes[i] - X - Y - X) - 1])
-					if (moveRight(0, individual.genes[i] - X - Y - X - 1, i + 1, individual))
+				{
+					moveNumber++;
+					if (moveRight(0, individual.genes[i] - X - Y - X - 1, moveNumber, individual))
 						return;
+				}
 			}
 		}
 	}
