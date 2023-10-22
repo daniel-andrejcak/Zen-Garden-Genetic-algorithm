@@ -224,7 +224,7 @@ void mutate(Individual& individual)
 void loadBlankGenes()
 {
 	blankGenes = std::vector<unsigned short>((X + Y) * 2);
-	for (size_t i = 0; i < (X + Y) * 2; i++)
+	for (unsigned short i = 0; i < (X + Y) * 2; i++)
 	{
 		blankGenes[i] = i + 1;
 	}
@@ -314,14 +314,14 @@ Individual geneticAlgorithm()
 			children.first.fitnesValue = fitnes(children.first);
 			if (children.first.fitnesValue == desiredFitnesValue)
 			{
-				std::cout << "Riesenie sa naslo v " << i + 1 << " generacii" << std::endl;
+				std::cout << "Riesenie sa naslo v " << i + 1 << ". generacii" << std::endl;
 				return children.first;
 			}
 
 			children.second.fitnesValue = fitnes(children.second);
 			if (children.second.fitnesValue == desiredFitnesValue)
 			{
-				std::cout << "Riesenie sa naslo v " << i + 1 << " generacii" << std::endl;
+				std::cout << "Riesenie sa naslo v " << i + 1 << ". generacii" << std::endl;
 				return children.second;
 			}
 
@@ -347,7 +347,7 @@ Individual geneticAlgorithm()
 	auto bestIndividual = std::max_element(generation.individuals.begin(), generation.individuals.end(), individualIsLessThan);
 
 	if ((*bestIndividual).fitnesValue == desiredFitnesValue)
-		std::cout << "Riesenie sa naslo v " <<  maxGenerations << " generacii" << std::endl;
+		std::cout << "Riesenie sa naslo v " <<  maxGenerations << ". generacii" << std::endl;
 	else
 		std::cout << "Nenaslo sa kompletne riesenie. Ostalo nepohrabanych " << desiredFitnesValue - (*bestIndividual).fitnesValue << " policok" << std::endl;
 

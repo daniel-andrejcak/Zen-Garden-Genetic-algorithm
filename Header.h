@@ -84,7 +84,7 @@ public:
 			}
 			else
 			{
-				if(individual.genes[X + Y + ((moveNumber + 0) % stoneCount)] == 0 && x + 1 != X && !grid[x + 1][y - 1])
+				if((!stoneCount || individual.genes[X + Y + ((moveNumber + 0) % stoneCount)] == 0) && x + 1 != X && !grid[x + 1][y - 1])
 				{
 					if (moveRight(x + 1, y - 1, moveNumber, individual))
 						return 1;
@@ -125,7 +125,7 @@ public:
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 1) % stoneCount)] == 0 && x != 0 && !grid[x - 1][y + 1])
+				if ((!stoneCount || individual.genes[X + Y + ((moveNumber + 1) % stoneCount)] == 0) && x != 0 && !grid[x - 1][y + 1])
 				{
 					if (moveLeft(x - 1, y + 1, moveNumber, individual))
 						return 1;
@@ -166,7 +166,7 @@ public:
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 2) % stoneCount)] == 0 && y + 1 != Y && !grid[x + 1][y + 1])
+				if ((!stoneCount || individual.genes[X + Y + ((moveNumber + 2) % stoneCount)] == 0) && y + 1 != Y && !grid[x + 1][y + 1])
 				{
 					if (moveDown(x + 1, y + 1, moveNumber, individual))
 						return 1;
@@ -205,7 +205,7 @@ public:
 			}
 			else
 			{
-				if (individual.genes[X + Y + ((moveNumber + 3) % stoneCount)] == 0 && y != 0 && !grid[x - 1][y - 1])
+				if ((!stoneCount || individual.genes[X + Y + ((moveNumber + 3) % stoneCount)] == 0) && y != 0 && !grid[x - 1][y - 1])
 				{
 					if (moveUp(x - 1, y - 1, moveNumber, individual))
 						return 1;
@@ -244,7 +244,7 @@ public:
 		  ak je cislo vacsie ako X + Y + X a mensie rovne ako X + Y + X + Y tak je to pohyb z lavej strany*/
 	
 
-		unsigned short moveNumber = 1;
+		unsigned short moveNumber = 0;
 
 		for (unsigned short i = 0; i < X + Y; i++)
 		{			
