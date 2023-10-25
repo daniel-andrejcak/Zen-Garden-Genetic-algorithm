@@ -111,6 +111,7 @@ Individual rouletteSelection(const Generation& population)
 {
 	unsigned int partialSum = 0;
 	unsigned int randIndividual = randIndex(0, population.fitnesValuesSum);
+	Individual individual;
 
 	for (auto& i : population.individuals)
 	{
@@ -118,9 +119,14 @@ Individual rouletteSelection(const Generation& population)
 
 		if (partialSum >= randIndividual)
 		{
-			return i;
+			individual = i;
+
+			break;
 		}
 	}
+
+
+	return individual;
 }
 
 //funkcia zabezpecujuca krizenie, vrati 2 potomkov
@@ -360,14 +366,13 @@ int main()
 {
 	//inicializacia
 	std::cout << "Zadajte rozmery zahrady" << std::endl;
-	//std::cin >> X >> Y;
-	X = 12;
-	Y = 10;
+	std::cin >> X >> Y;
+
 
 	blankGarden = Garden(X, Y);
 
 
-	/*std::cout << "Zadajte pocet kamenov" << std::endl;
+	std::cout << "Zadajte pocet kamenov" << std::endl;
 	std::cin >> stoneCount;
 
 
@@ -382,12 +387,12 @@ int main()
 
 		blankGarden.placeStone(x, y);
 
-	}*/
+	}
 
 
 	std::cout << "Zadajte sposob vyberu jednincov" << std::endl << "R - ruletovy vyber T - turnajovy vyber" << std::endl;
-	char s = 'T';
-	/*std::cin >> s;*/
+	char s;
+	std::cin >> s;
 
 	if (s == 'R')
 	{
@@ -404,16 +409,14 @@ int main()
 	}
 
 
+	//stoneCount = 6;
 
-	stoneCount = 6;
-
-
-	blankGarden.placeStone(1, 2);
-	blankGarden.placeStone(2, 4);
-	blankGarden.placeStone(4, 3);
-	blankGarden.placeStone(5, 1);
-	blankGarden.placeStone(8, 6);
-	blankGarden.placeStone(9, 6);
+	//blankGarden.placeStone(1, 2);
+	//blankGarden.placeStone(2, 4);
+	//blankGarden.placeStone(4, 3);
+	//blankGarden.placeStone(5, 1);
+	//blankGarden.placeStone(8, 6);
+	//blankGarden.placeStone(9, 6);
 
 	individualSize = X + Y + stoneCount;
 	desiredFitnesValue = X * Y - stoneCount;
