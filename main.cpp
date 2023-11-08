@@ -3,14 +3,15 @@
 #include<fstream>
 #include<iomanip>
 #include<random>
+#include<string>
 #include<utility>
 #include<vector>
 
 #include"Header.h"
 
-unsigned short maxGenerations = 100;
-unsigned short populationSize = 1000;
+unsigned short populationSize = 500;
 unsigned short chanceToMutate = 10;
+unsigned short maxGenerations = 100;
 unsigned short individualSize = 0;
 unsigned short desiredFitnesValue = 0;
 
@@ -362,8 +363,20 @@ Individual geneticAlgorithm()
 /*Ak však príde k prekážke – kameòu alebo už pohrabanému piesku – musí sa otoèi, ak má kam.
 Ak má vo¾né smery v¾avo aj vpravo, je jeho vec, kam sa otoèí. Ak má vo¾ný len jeden smer, otoèí sa tam.
 Ak sa nemá kam otoèi, je koniec hry.*/
-int main()
+int main(int argc, char* argv[])
 {
+	if (argc >= 2)
+	{
+		populationSize = std::stoi(std::string(argv[1]));
+	}
+
+	if (argc >= 3)
+	{
+		chanceToMutate = std::stoi(std::string(argv[2]));
+	}
+
+
+
 	//inicializacia
 	std::cout << "Zadajte rozmery zahrady" << std::endl;
 	std::cin >> X >> Y;
@@ -409,6 +422,7 @@ int main()
 	}
 
 
+	//vzorovy priklad
 	//stoneCount = 6;
 
 	//blankGarden.placeStone(1, 2);
@@ -417,6 +431,7 @@ int main()
 	//blankGarden.placeStone(5, 1);
 	//blankGarden.placeStone(8, 6);
 	//blankGarden.placeStone(9, 6);
+
 
 	individualSize = X + Y + stoneCount;
 	desiredFitnesValue = X * Y - stoneCount;
