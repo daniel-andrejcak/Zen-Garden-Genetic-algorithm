@@ -11,7 +11,7 @@
 
 unsigned short populationSize = 500;
 unsigned short chanceToMutate = 10;
-unsigned short maxGenerations = 100;
+unsigned short maxGenerations = 200;
 unsigned short individualSize = 0;
 unsigned short desiredFitnesValue = 0;
 
@@ -313,13 +313,16 @@ Individual geneticAlgorithm()
 			children.first.fitnesValue = fitnes(children.first);
 			if (children.first.fitnesValue == desiredFitnesValue)
 			{
+				std::cout << desiredFitnesValue << std::endl;
 				std::cout << "Riesenie sa naslo v " << i + 1 << ". generacii" << std::endl;
+
 				return children.first;
 			}
 
 			children.second.fitnesValue = fitnes(children.second);
 			if (children.second.fitnesValue == desiredFitnesValue)
 			{
+				std::cout << desiredFitnesValue << std::endl;
 				std::cout << "Riesenie sa naslo v " << i + 1 << ". generacii" << std::endl;
 				return children.second;
 			}
@@ -339,6 +342,10 @@ Individual geneticAlgorithm()
 		}
 
 		generation = nextGeneration;
+
+		auto bestIndividual = std::max_element(generation.individuals.begin(), generation.individuals.end(), individualIsLessThan);
+
+		std::cout << (*bestIndividual).fitnesValue << std::endl;
 	}
 
 
@@ -347,6 +354,7 @@ Individual geneticAlgorithm()
 
 	if ((*bestIndividual).fitnesValue == desiredFitnesValue)
 	{
+		std::cout << desiredFitnesValue << std::endl;
 		std::cout << "Riesenie sa naslo v " << maxGenerations << ". generacii" << std::endl;
 	}
 	else
@@ -365,6 +373,7 @@ Ak má vo¾né smery v¾avo aj vpravo, je jeho vec, kam sa otoèí. Ak má vo¾ný len je
 Ak sa nemá kam otoèi, je koniec hry.*/
 int main(int argc, char* argv[])
 {
+	//spracovanie vstupnych argumentov
 	if (argc >= 2)
 	{
 		populationSize = std::stoi(std::string(argv[1]));
@@ -442,6 +451,7 @@ int main(int argc, char* argv[])
 
 
 	Individual best = geneticAlgorithm();
+
 
 
 	blankGarden.useGenes(best);
